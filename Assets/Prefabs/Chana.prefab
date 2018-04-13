@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 114208689502093792}
   - component: {fileID: 61865872397870488}
   - component: {fileID: 50432294276833648}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Chana
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,8 +38,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4847892027418020}
   - component: {fileID: 212899560791080634}
-  - component: {fileID: 95533892851184296}
-  m_Layer: 0
+  - component: {fileID: 114071386857290152}
+  - component: {fileID: 114363957843640940}
+  m_Layer: 8
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,23 +119,53 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!95 &95533892851184296
-Animator:
-  serializedVersion: 3
+--- !u!114 &114071386857290152
+MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1618792075155524}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b98bfebfd3dbfe14782fd98d04b87b7c, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d9769a0fbec3984ea50cb55940d09d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 0}
+  animations:
+  - name: Walk
+    fps: 6
+    frames:
+    - {fileID: 21300000, guid: a0d55b90b04008243a7ada061dae17b9, type: 3}
+    - {fileID: 21300000, guid: cacc5a0a99519e746b4454103e73eac1, type: 3}
+    - {fileID: 21300000, guid: a0d55b90b04008243a7ada061dae17b9, type: 3}
+    - {fileID: 21300000, guid: 523b0f50c8948fa4398b12b4c681fe83, type: 3}
+    triggers: []
+  - name: Idle
+    fps: 6
+    frames:
+    - {fileID: 21300000, guid: a0d55b90b04008243a7ada061dae17b9, type: 3}
+    triggers: []
+  - name: Jump
+    fps: 6
+    frames:
+    - {fileID: 21300000, guid: 3ba2cc82eaaa3b048b2f155c8641dc60, type: 3}
+    triggers: []
+  - name: Duck
+    fps: 6
+    frames:
+    - {fileID: 21300000, guid: 16df046c3208ec940ac3a2ab4dbf0326, type: 3}
+    triggers: []
+  - name: Slide
+    fps: 6
+    frames:
+    - {fileID: 21300000, guid: c9fde70b33d6ac24ab627433de1b1d31, type: 3}
+    triggers: []
+  - name: Hurt
+    fps: 6
+    frames:
+    - {fileID: 21300000, guid: dd1d29a97da22fe4e9e275dfd2aa2d79, type: 3}
+    triggers: []
+  playAnimationOnStart: Idle
 --- !u!114 &114208689502093792
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -150,14 +181,28 @@ MonoBehaviour:
   maxSpeed: 5
   facingRight: 0
   jump: 0
-  fallMultiplier: 2.5
-  jumpForce: 1000
-  lowJumpMultiplier: 2
+  fallMultiplier: 4
+  jumpForce: 300
+  lowJumpMultiplier: 4
   groundedDistance: 1
   grounded: 0
   groundLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967039
+--- !u!114 &114363957843640940
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1618792075155524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7b2c12992946614f9f0555f0d95f10f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteAnimator: {fileID: 0}
+  platformerController: {fileID: 0}
+  rigidbody2D: {fileID: 0}
 --- !u!212 &212899560791080634
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -194,7 +239,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: a0d55b90b04008243a7ada061dae17b9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}

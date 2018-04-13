@@ -27,7 +27,9 @@
           </e>
         </e>
         <e p="Scripts" t="Include">
+          <e p="ChanaAnimator.cs" t="Include" />
           <e p="PlatformerController.cs" t="Include" />
+          <e p="SpriteAnimator.cs" t="Include" />
         </e>
       </e>
       <e p="Doukutsu.sln" t="IncludeFlat" />

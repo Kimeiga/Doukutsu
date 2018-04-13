@@ -1,16 +1,20 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Runtime.Remoting.Messaging;
+using UnityEngine;
 
 public class PlatformerController : MonoBehaviour
 {
     
     private Rigidbody2D rb;
     private BoxCollider2D collider;
+    private SpriteAnimator spriteAnimator;
+    
     
     [Header("Movement")]
     
     public float runSpeed = 8;
-    private float xMove;
     public float maxSpeed = 5f;
+    public float xMove;
     
     [HideInInspector] public bool facingRight;
     
@@ -31,14 +35,17 @@ public class PlatformerController : MonoBehaviour
 //    public Transform bottomRight;
     public float groundedDistance = 1;
     public bool grounded;
-    public LayerMask groundLayers;  
+    public LayerMask groundLayers;
 
+
+    public bool duck;
 
     // Use this for initialization
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        collider = gameObject.GetComponent<BoxCollider2D>();
+        collider = GetComponent<BoxCollider2D>();
+        spriteAnimator = transform.GetChild(0).GetComponent<SpriteAnimator>();
     }
 
     // Update is called once per frame
@@ -46,6 +53,7 @@ public class PlatformerController : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump") && grounded) jump = true;
 
+        duck = Input.GetButton("Duck");
 
         if (Input.GetAxisRaw("Horizontal") == -1 && !facingRight)
             Flip();
@@ -62,51 +70,13 @@ public class PlatformerController : MonoBehaviour
     private void FixedUpdate()
     {
         //check if grounded
-        
-         
-//        Vector2 size = collider.size;
-//        Vector2 centerPoint = new Vector2( collider.offset.x, collider.offset.y);
-//        
-//        
-//        float top = collider.offset.y + (collider.size.y / 2f);
-        float btm = collider.offset.y - (collider.size.y / 2f);
-        float left = collider.offset.x - (collider.size.x / 2f);
-        float right = collider.offset.x + (collider.size.x /2f);
-//         
-//        Vector3 topLeft = transform.TransformPoint (new Vector3( left, top, 0f));
-//        Vector3 topRight = transform.TransformPoint (new Vector3( right, top, 0f));
-        Vector3 btmLeft = transform.TransformPoint (new Vector3( left, btm, 0f));
-        Vector3 btmRight = transform.TransformPoint (new Vector3( right, btm, 0f));
-//        
-//        Debug.DrawLine(topLeft,btmRight);
-//        Debug.DrawLine(topRight,btmLeft);
-//        Debug.DrawLine(btmLeft,btmRight);
-//        
-//        grounded = Physics2D.OverlapArea(btmLeft, btmRight, groundLayers);
-//
-//        print(Physics2D.OverlapArea(btmLeft, btmRight, groundLayers).gameObject.name);
-        
-        RaycastHit2D hit = Physics2D.Raycast(btmLeft, -Vector2.up, 0.1f, groundLayers);
-        Debug.DrawLine(transform.position, transform.position - new Vector3(0, 0.1f, 0));
-        
-        RaycastHit2D hit2 = Physics2D.Raycast(btmLeft, -Vector2.up, 0.1f, groundLayers);
-        Debug.DrawLine(btmLeft, btmLeft - new Vector3(0, 0.1f, 0));
-
-        RaycastHit2D hit3 = Physics2D.Raycast(btmRight, -Vector2.up, 0.1f, groundLayers);
-        Debug.DrawLine(btmRight, btmRight - new Vector3(0, 0.1f, 0));
-
-
-        
-        grounded = (hit.collider != null | hit2.collider != null | hit3.collider != null);
-       
-        
-        float h;
+        IsGrounded();
 
         //store Right Hor input
-        h = Input.GetAxis("Horizontal");
+        float h = Input.GetAxis("Horizontal");
 
         //store wish move Right Hor
-        float xMove = h * runSpeed;
+        xMove = h * runSpeed;
 
         //move Right Horly
         rb.velocity += new Vector2(xMove - rb.velocity.x, 0);
@@ -121,6 +91,47 @@ public class PlatformerController : MonoBehaviour
         //limit speed by maxSpeed
         if (Mathf.Abs(rb.velocity.x) > maxSpeed)
             rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
+
+        if (duck)
+        {
+            collider.size = new Vector2(collider.size.x, 0.5f);
+            collider.offset = new Vector2(collider.offset.x, 0.25f);
+        }
+        else
+        {
+            collider.size = new Vector2(collider.size.x, 1f);
+            collider.offset = new Vector2(collider.offset.x, 0.5f);
+        }
+        
+    }
+
+    //sets grounded to whether we're grounded
+    private void IsGrounded()
+    {
+        //get extents
+        float btm = collider.offset.y - (collider.size.y / 2f);
+        float left = collider.offset.x - (collider.size.x / 2f);
+        float right = collider.offset.x + (collider.size.x /2f);
+        
+        //get corners
+        Vector3 btmMid = transform.TransformPoint (new Vector3( 0, btm, 0f));
+        Vector3 btmLeft = transform.TransformPoint (new Vector3( left, btm, 0f));
+        Vector3 btmRight = transform.TransformPoint (new Vector3( right, btm, 0f));
+
+        //raycast from bottom midpoint down 
+        RaycastHit2D hit = Physics2D.Raycast(btmMid, -Vector2.up, 0.1f, groundLayers);
+        Debug.DrawLine(btmMid, btmMid - new Vector3(0, 0.1f, 0));
+        
+        //raycast from bottom left corner down
+        RaycastHit2D hit2 = Physics2D.Raycast(btmLeft, -Vector2.up, 0.1f, groundLayers);
+        Debug.DrawLine(btmLeft, btmLeft - new Vector3(0, 0.1f, 0));
+
+        //raycast from bottom right corner down
+        RaycastHit2D hit3 = Physics2D.Raycast(btmRight, -Vector2.up, 0.1f, groundLayers);
+        Debug.DrawLine(btmRight, btmRight - new Vector3(0, 0.1f, 0));
+
+        //if one of those intersects with something, we are grounded
+        grounded = (hit.collider != null | hit2.collider != null | hit3.collider != null);
     }
 
 
